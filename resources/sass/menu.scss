@@ -1,0 +1,129 @@
+/**
+* MENU CSS
+*/
+:root{
+    --verde-logo: rgb(43,138,128);
+}
+header{
+    height: 200px;
+}
+div > div[class$="contenedor"]{
+    display: inline-block;
+    width: 327px;
+    height: auto;
+    margin: 20px;
+}
+/*/////////////////////////////////////////////////////////////*/
+div[class$="contenedor"] > div[class$="arriba"]{
+    display: inline-block;
+    width: 325px;
+    height: 96px;
+    color: white;
+    background-color: var(--verde-logo);
+    border: 1px solid gray;
+    border-bottom: none;
+}
+
+div[class$="arriba"] > div[class$="titulo"]{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 35px;
+}
+
+div[class$="arriba"] > div[class$="titulo"] > label{
+    font-size: 18px;
+    font-weight: 700;
+}
+/*/////////////////////////////////////////////////////////////*/
+div[class$="contenedor"] > div[class$="abajo"]{
+    display: inline-block;
+    width: 325px;
+    height: auto;
+    border: 1px solid gray;
+    border-top: none;
+}
+div.container{
+    margin-top: 20px;
+    display: block;
+}
+div.container > div[class^="agregar"], div.container > div[class^="modificar"], div.container > div[class^="eliminar"]{
+    display: block;
+    width: 245px;
+    margin-bottom: 10px;
+}
+div > input[id$="direccion"]{
+    display: inline-block;
+    background-color: white;
+    border: 0.5px solid black;
+    padding-right: 40px;
+    color: black;
+}
+div > input[id$="carga"]{
+    position: absolute;
+    display: inline-block;
+    background-color: unset;
+    background-image: url('/img/cargar-verde.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    width: 20px;
+    height: 20px;
+    border: 0;
+    margin-left: -46px; /*-32px;*/
+    margin-top: 7px;
+    cursor: pointer;
+    z-index: 99;
+}
+div > input[id$="carga"]:hover{
+/* #agregargruacarga:hover, #modificargruacarga:hover, #agregarmanucarga:hover, #modificarmanucarga:hover{ */
+    background-image: url('/img/cargar-rojo.png');
+}
+.agregargruafoto, .modificargruafoto, .agregarmanupdf, .modificarmanupdf{
+    display: inline-block;
+    overflow: hidden;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin-left: -24px;
+    cursor: pointer;
+    opacity: 0;
+}
+textarea#agregarmanudescripcion, textarea#modificarmanudescripcion{
+    margin: 0px;
+    height: 169px;
+    width: 198px;
+    resize: unset;
+}
+div > label{
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+}
+div > input, div > select{
+    display: block;
+    padding: 7px;
+    width: 200px;
+}
+div > input[type="submit"]{
+    background-color: var(--verde-logo);
+    width: 287px;
+    height: 60px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    border: 0;
+    margin-top: 10px;
+}
+div > input[type="submit"]:hover{
+    background-color: var(--light);
+    color: var(--verde-logo);
+    border: 1px solid var(--verde-logo);
+}
+label.respuesta{
+    margin-top: 5px;
+    font-size: 15px;
+    padding-bottom: 5px;
+}
+/**
+* FIN MENU CSS
+*/

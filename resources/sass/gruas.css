@@ -1,0 +1,106 @@
+.grua-titulo{
+    display: block;
+    width: auto;
+    height: 30px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+.grua-imagen{
+    display: block;
+    width: 536px;
+    height: 373px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+table{
+    margin-top: 15px;
+    font-size: 16px;
+}
+.mantenimiento{
+    width: 537px;
+}
+.historial{
+    display: block;
+    width: 537px;
+    height: 355px;
+    margin-top: 20px;
+    overflow-y: scroll;
+}
+.historial > button{
+    display: block;
+    width: 354px;
+    height: 60px;
+    background-color: var(--rojo-gonavi);
+    color: white;
+    font-weight: 700;
+    border: 0;
+    margin: 11px;
+}
+.historial > button:hover {
+    background-color: white;
+    color: var(--rojo-gonavi);
+    border: 2px solid var(--rojo-gonavi);
+}
+.tab button:hover {
+    color: var(--rojo-gonavi);
+    border-bottom: 2px solid var(--rojo-gonavi);
+}
+.tab button.activo {
+    color: var(--rojo-gonavi);
+    border-bottom: 2px solid var(--rojo-gonavi);
+}
+.col-xs-6{
+    margin: 5px 15px 5px 5px;
+}
+div > label{
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+}
+.manual{
+    width: 537px;
+    height: 355px;
+    overflow-y: scroll;
+    overflow-x: unset;
+}
+.manual-contenedor{
+    display: inline-block;
+    width: 450px;
+    height: 187px;
+    margin: 20px;
+}
+.manual-arriba{
+    display: block;
+    width: inherit;
+    height: 67px;
+    color: white;
+    background-color: var(--rojo-gonavi);
+    border-bottom: 1px solid gray;
+}
+.manual-titulo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.manual-abajo{
+    display: block;
+    width: inherit;
+    height: 120px;
+    margin-top: 10px;
+}
+.manual-descripcion{
+    float: left;
+    width: 300px;
+    height: inherit;
+    text-align: justify;
+}
+.manual-icono{
+    float: right;
+    width: 120px;
+    height: 120px;
+    background-image: url('/img/pdf.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
