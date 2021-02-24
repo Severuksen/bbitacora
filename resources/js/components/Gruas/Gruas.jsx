@@ -10,38 +10,67 @@ const Gruas = () =>
 {
     const form = new FormData();
 
-    const [gruas, setGruas] = useState({
+    const [agregar, setAgregar] = useState({
         id: 0,
         tipo: 'Reach Stacker',
         fabricante: '',
         modelo: '',
         img: [],
-        mensajeAgregar: '',
-        mensajeModificar: '',
-        mensajeEliminar: '',
-        listaGruas: []
+        mensaje: ''
     });
 
-    const selectGrua = (e) =>
+    const [modificar, setModificar] = useState({
+        id: 0,
+        tipo: '',
+        fabricante: '',
+        modelo: '',
+        img: [],
+        mensaje: ''
+    });
+
+    const [eliminar, setEliminar] = useState({
+        id: 0,
+        tipo: '',
+        fabricante: '',
+        modelo: '',
+        img: [],
+        mensaje: ''
+    });
+
+    const [lista, setLista] = useState([]);
+
+    const selectGrua = async(e) =>
     {
-        let id = e.target.value;
-        Axios.get(`/api/gruas/${id}`)
-            .then(respuesta => {
-                setGruas(previo => ({...previo,
+        let id   = e.target.value;
+        let name = e.target.name;
+        try{
+            let respuesta = await Axios.get(`/api/gruas/${id}`);
+            if (name === 'modificar'){
+                setModificar(previo => ({...previo,
                     id: respuesta.data[0].id_grua,
                     tipo: respuesta.data[0].tipo_grua,
                     fabricante: respuesta.data[0].fab_grua,
                     modelo: respuesta.data[0].mod_grua
                 }));
-            })
-            .catch(error => console.log('Error: ', error));
+            } else if (name === 'eliminar') {
+                setEliminar(previo => ({...previo,
+                    id: respuesta.data[0].id_grua,
+                    modelo: respuesta.data[0].mod_grua
+                }));
+            }
+
+
+        } catch(error){
+            console.log('Error: ', error);
+        }
     };
 
     const listaGruas = async() =>
     {
         try{
             let respuesta = await Axios.get('/api/gruas/');
-            setGruas(previo => ({...previo, listaGruas: respuesta.data}));
+            setLista(respuesta.data);
+            console.log('Lista: ', lista);
         } catch(error){
             console.log('Error: ', error);
         }
@@ -62,15 +91,8 @@ const Gruas = () =>
                 let direccion   = e.target.parentNode.firstChild.nextSibling;
                 let nombre      = e.target.value.substr(12);
                 direccion.value = nombre;
-
-                setGruas(previo => ({
-                    ...previo,
-                    mensaje: '',
-                    img: {
-                        name: imagen.name,
-                        file: imagen
-                    }
-                }));
+                if (name)
+                setAgregar(previo => ({...previo, mensaje: '', img: {name: imagen.name, file: imagen}}));
                 break;
             default:
                 return setGruas(previo => ({
@@ -85,22 +107,27 @@ const Gruas = () =>
     {
         let valor = e.target.value;
         let id    = e.target.id;
-        setGruas(previo => ({...previo, [id]: valor}));
+        let name  = e.target.name;
+        if(name === 'agregar'){
+            setAgregar(previo => ({...previo, [id]: valor}));
+        } else if(name === 'modificar'){
+            setModificar(previo => ({...previo, [id]: valor}));
+        }
     };
 
     const enviarFormAgregar = (e) =>
     {
         e.preventDefault();
-        form.append('tipo_grua', gruas.tipo);
-        form.append('fab_grua', gruas.fabricante);
-        form.append('mod_grua', gruas.modelo);
-        form.append('img', gruas.img.name);
-        form.append('file', gruas.img.file);
+        form.append('tipo_grua', agregar.tipo);
+        form.append('fab_grua', agregar.fabricante);
+        form.append('mod_grua', agregar.modelo);
+        form.append('img', agregar.img.name);
+        form.append('file', agregar.img.file);
 
         Axios
             .post('/api/gruas/', form)
             .then(respuesta => {
-                setGruas(previo => ({...previo, mensajeAgregar: 'Grua agregada exitosamente.', mensajeModificar: '', mensajeEliminar: ''}));
+                setAgregar(previo => ({...previo, mensaje: 'Grua agregada exitosamente.'}));
             })
             .catch(error => console.log('Error: ', error));
     };
@@ -109,14 +136,20 @@ const Gruas = () =>
     {
         e.preventDefault();
         if(gruas.img === []){
-            var datos = {id_grua: gruas.id, tipo_grua: gruas.tipo, fab_grua: gruas.fabricante, mod_grua: gruas.modelo}
+            var datos = {id_grua: modificar.id, tipo_grua: modificar.tipo, fab_grua: modificar.fabricante, mod_grua: modificar.modelo}
         } else {
-            var datos = {id_grua: gruas.id, tipo_grua: gruas.tipo, fab_grua: gruas.fabricante, mod_grua: gruas.modelo, img: gruas.img}
+            form.append('id_grua', modificar.id);
+            form.append('tipo_grua', modificar.tipo);
+            form.append('fab_grua', modificar.fabricante);
+            form.append('mod_grua', modificar.modelo);
+            form.append('img', modificar.img.name);
+            form.append('file', modificar.img.file);
+            var datos = form;
         }
         Axios
-            .put(`/api/gruas/${gruas.id}`, datos)
+            .put(`/api/gruas/${modificar.id}`, datos)
             .then(respuesta => {
-                setGruas(previo => ({...previo, mensajeAgregar: '', mensajeModificar: 'Grua modificada exitosamente.', mensajeEliminar: ''}))
+                setModificar(previo => ({...previo, mensaje: 'Grua modificada exitosamente.'}))
             })
             .catch(error => console.log('Error: ', error));
     };
@@ -125,23 +158,35 @@ const Gruas = () =>
     {
         e.preventDefault();
         try{
-            let respuesta = await Axios.delete(`/api/gruas/${gruas.id}`);
-            setGruas(previo => ({...previo, mensajeAgregar: '', mensajeModificar: '', mensajeEliminar: 'Grua eliminada exitosamente.'}))
+            let respuesta = await Axios.delete(`/api/gruas/${eliminar.id}`);
+            setEliminar(previo => ({...previo, mensaje: 'Grua eliminada exitosamente.'}))
         } catch (error) {
             console.log('Error: ', error);
         }
     };
 
-    const consola = () =>
+    const consola = (a) =>
     {
-        console.log('Gruas: ', gruas);
+        switch(a){
+            case 'agregar':
+                console.log('Agregar: ', agregar);
+                break;
+            case 'modificar':
+                console.log('Modificar: ', modificar);
+                break;
+            case 'eliminar':
+                console.log('Eliminar: ', eliminar);
+                break;
+        }
     };
 
     useEffect(() => {
         listaGruas();
-    }, [gruas.mensajeAgregar, gruas.mensajeModificar, gruas.mensajeEliminar]);
+    }, [agregar.mensaje, modificar.mensaje, eliminar.mensaje]);
 
-    useEffect(() => {consola();}, [gruas]);
+    useEffect(() => {consola('agregar');}, [agregar]);
+    useEffect(() => {consola('modificar');}, [modificar]);
+    useEffect(() => {consola('eliminar');}, [eliminar]);
 
     return (
         <Menu html={
@@ -149,24 +194,24 @@ const Gruas = () =>
                 <div className="row">
                     <AgregarGruas form={enviarFormAgregar} html={
                         <div>
-                            <Tipo onChange={cambioCampos} value={gruas.tipo} />
-                            <Fabricante onChange={cambioCampos} value={gruas.fabricante} />
-                            <Modelo onChange={cambioCampos} value={gruas.modelo} />
-                            <Foto onChange={direccion} onClick={cargarDireccion} value={gruas.direccion} mensaje={gruas.mensajeAgregar} />
+                            <Tipo onChange={cambioCampos} value={agregar.tipo} op='agregar' />
+                            <Fabricante onChange={cambioCampos} value={agregar.fabricante} op='agregar' />
+                            <Modelo onChange={cambioCampos} value={agregar.modelo} op='agregar'/>
+                            <Foto onChange={direccion} onClick={cargarDireccion} value={agregar.direccion} mensaje={agregar.mensaje} op='agregar' />
                         </div>
                     }/>
                     <ModificarGruas form={enviarFormModificar} html={
                         <div>
-                            <Seleccion onChange={selectGrua} value={gruas.listaGruas}  />
-                            <Tipo onChange={cambioCampos} value={gruas.tipo}  />
-                            <Fabricante onChange={cambioCampos} value={gruas.fabricante}  />
-                            <Modelo onChange={cambioCampos} value={gruas.modelo}  />
-                            <Foto onChange={direccion} onClick={cargarDireccion} value={gruas.direccion} mensaje={gruas.mensajeModificar}  />
+                            <Seleccion onChange={selectGrua} value={lista} op='modificar' />
+                            <Tipo onChange={cambioCampos} value={modificar.tipo}  op='modificar'/>
+                            <Fabricante onChange={cambioCampos} value={modificar.fabricante}  op='modificar'/>
+                            <Modelo onChange={cambioCampos} value={modificar.modelo}  op='modificar'/>
+                            <Foto onChange={direccion} onClick={cargarDireccion} value={modificar.direccion} mensaje={modificar.mensaje} op='modificar'/>
                         </div>
                     }/>
                     <EliminarGruas form={enviarFormEliminar} html={
                         <div>
-                            <Seleccion onChange={selectGrua} value={gruas.listaGruas} mensaje={gruas.mensajeEliminar}/>
+                            <Seleccion onChange={selectGrua} value={lista} mensaje={eliminar.mensaje} op='eliminar'/>
                         </div>
                     }/>
                 </div>
@@ -178,9 +223,9 @@ const Gruas = () =>
 const Seleccion = (props) =>
 {
     return (
-        <div className="modificar-grua-seleccion">
-            <label htmlFor="modificargruagrua">Selecciona una grúa:</label>
-            <select onChange={props.onChange} id="modificargruagrua" name="modificargruagrua" >
+        <div className={`${props.op}-grua-seleccion`}>
+            <label htmlFor={`${props.op}gruagrua`}>Selecciona una grúa:</label>
+            <select className={`${props.op}gruagrua`} onChange={props.onChange} id={`${props.op}gruagrua`} name={`${props.op}`} >
                 {props.value.map(gruas => (
                     <option key={gruas.id_grua} value={gruas.id_grua}>{gruas.mod_grua}</option>
                 ))}
@@ -193,9 +238,9 @@ const Seleccion = (props) =>
 const Tipo = (props) =>
 {
     return (
-        <div className="modificar-grua-tipo">
-            <label htmlFor="modificargruatipo">Tipo de grúa:</label>
-            <select value={props.value} onChange={props.onChange} id="tipo" name="modificargruatipo"  >
+        <div className={`${props.estilo}-grua-tipo`}>
+            <label htmlFor={`${props.estilo}gruatipo`}>Tipo de grúa:</label>
+            <select value={props.value} onChange={props.onChange} id="tipo" name={`${props.op}`}  >
                 <option value="Reach Stacker">Reach Stacker</option>
                 <option value="Forklift">Forklift</option>
             </select>
@@ -208,7 +253,7 @@ const Fabricante = (props) =>
     return (
         <div className="modificar-grua-fabricante">
             <label htmlFor="modificarfabricante">Fabricante: </label>
-            <input value={props.value} onChange={props.onChange} type="text" id="fabricante" name="modificargruafabricante" placeholder="Nombre del fabricante" required />
+            <input value={props.value} onChange={props.onChange} type="text" id="fabricante" name={`${props.op}`} placeholder="Nombre del fabricante" required />
         </div>
     );
 };
@@ -218,7 +263,7 @@ const Modelo = (props) =>
     return (
         <div className="modificar-grua-modelo">
             <label htmlFor="modificargruamodelo">Modelo: </label>
-            <input value={props.value} onChange={props.onChange} type="text" id="modelo" name="modificargruamodelo" placeholder="Modelo de la grúa"/>
+            <input value={props.value} onChange={props.onChange} type="text" id="modelo" name={`${props.op}`} placeholder="Modelo de la grúa"/>
         </div>
         );
 };
@@ -228,7 +273,7 @@ const Foto = (props) =>
     return (
         <div className="modificar-grua-foto">
             <label htmlFor="modificargruafoto">Imagen de la grúa: </label>
-            <input value={props.value} type="text" id="modificardireccion" name="modificardireccion" placeholder="Imagen..."  disabled/>
+            <input value={props.value} type="text" id="modificardireccion" name={`${props.op}`} placeholder="Imagen..."  disabled/>
             <input onClick={props.onClick} type="button" name="modificargruacarga" id="modificargruacarga" />
             <input onChange={props.onChange} type="file" id="modificarfoto" className="modificargruafoto" name="modificargruafoto" accept=".png, .jpg" />
             <label className="respuesta">{props.mensaje}</label>
